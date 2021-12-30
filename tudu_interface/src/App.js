@@ -22,21 +22,32 @@ class App extends React.Component {
         axios.post('http://127.0.0.1:8000/api-token-auth/', {"username": login, "password": password})
         .then(response => {
             const token = response.data.token
+            localStorage.setItem('token', token)
             this.setState({
                     'token': token
-                }, this.get_data)
+                }, () => this.get_data())
         }).catch(error => console.log(error))
     }
 
+    logout() {
+        localStorage.setItem('token', '')
+        this.setState({
+                'token': ''
+        }, () => this.get_data())
+    }
+
     is_authenticated() {
-        return this.state.token != ''
+        return !!this.state.token
     }
 
     get_headers() {
-        if (this.is_authenticated()) {
-            return { 'Authorization': 'Token ' + this.state.token }
+        let headers = {
+            'Content-Type': 'application/json'
         }
-        return {}
+        if (this.is_authenticated()) {
+            headers['Authorization'] = 'Token ' + this.state.token
+        }
+        return headers
     }
 
     get_data() {
@@ -47,7 +58,12 @@ class App extends React.Component {
                         this.setState({
                                 'users': users
                             })
-                }).catch(error => console.log(error))
+                }).catch(error => {
+                    console.log(error)
+                    this.setState({
+                            'users': []
+                        })
+                    })
 
         axios.get('http://127.0.0.1:8000/api/projects/', {headers})
                 .then(response => {
@@ -55,11 +71,19 @@ class App extends React.Component {
                         this.setState({
                                 'projects': projects
                             })
-                }).catch(error => console.log(error))
+                }).catch(error => {
+                    console.log(error)
+                    this.setState({
+                            'projects': []
+                        })
+                    })
     }
 
     componentDidMount() {
-        this.get_data()
+        let token = localStorage.getItem('token')
+        this.setState({
+                'token': token
+            }, () => this.get_data())
     }
 
     render() {
@@ -69,7 +93,11 @@ class App extends React.Component {
                 <ul>
                   <li><Link to="/users">Users</Link></li>
                   <li><Link to="/projects">Projects</Link></li>
-                  <li><Link to="/login">Sign In</Link></li>
+                  <li>
+                    { this.is_authenticated() ? <button onClick={() => this.logout()}>
+                        Sign Out
+                    </button> : <Link to="/login">Sign In</Link> }
+                  </li>
                 </ul>
               </nav>
               <Routes>
