@@ -1,8 +1,8 @@
 from django.contrib.auth.models import User as U
 from django.test import TestCase
 from rest_framework import status
-from rest_framework.test import APIRequestFactory, force_authenticate, APIClient
-
+from rest_framework.test import (APIRequestFactory, force_authenticate, APIClient,
+                                 APITestCase)
 from users.models import User
 from users.views import UserModelViewSet
 
@@ -40,3 +40,19 @@ class TestUserModelViewSet(TestCase):
         self.assertEqual(blondin.firstname, 'Maksim')
         self.assertEqual(blondin.lastname, 'Borodin')
         client.logout()
+
+
+class TestPostUser(APITestCase):
+    def test_create_user(self):
+        url = '/api/users/'
+        data = {
+            'username': 'Dasha',
+            'firstname': 'Darya',
+            'lastname': 'Pivovarova',
+            'email': 'dasha@gb.ru',
+            'age': 31
+        }
+        admin = U.objects.create_superuser('anton', 'anton@gb.ru', 'fqrbljrf')
+        self.client.login(username='anton', password='fqrbljrf')
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
