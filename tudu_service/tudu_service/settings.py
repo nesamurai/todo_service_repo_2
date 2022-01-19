@@ -41,9 +41,14 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'corsheaders',
     'drf_yasg',
+    'graphene_django',
     'users',
     'notes',
 ]
+
+GRAPHENE = {
+    'SCHEMA': 'tudu_service.schema.schema'
+}
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [

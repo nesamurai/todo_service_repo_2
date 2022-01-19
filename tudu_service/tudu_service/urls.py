@@ -20,6 +20,7 @@ from rest_framework.authtoken import views
 from rest_framework.routers import DefaultRouter
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
+from graphene_django.views import GraphQLView
 
 from notes.views import ProjectModelViewSet, TuduModelViewSet
 from users.views import UserModelViewSet
@@ -49,5 +50,6 @@ urlpatterns = [
     path('api/', include(router.urls)),
     path('api/v1/users/', include('users.urls', namespace='v1')),
     path('api/v2/users/', include('users.urls', namespace='v2')),
-    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0))
+    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0)),
+    path('graphql/', GraphQLView.as_view(graphiql=True))
 ]
