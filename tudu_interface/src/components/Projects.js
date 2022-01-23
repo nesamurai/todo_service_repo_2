@@ -1,14 +1,17 @@
-const ProjectInfo = ({project}) => {
+const ProjectInfo = ({project, deleteProject}) => {
     return (
         <tr>
             <td>{ project.title }</td>
             <td>{ project.link }</td>
             <td>{ JSON.stringify(project.users) }</td>
+            <td>
+                <button onClick={()=>deleteProject(project.id)} type='button'>Delete</button>
+            </td>
         </tr>
     )
 }
 
-const ProjectList = ({projects}) => {
+const ProjectList = ({projects, deleteProject}) => {
     return (
         <table>
           <thead>
@@ -16,12 +19,13 @@ const ProjectList = ({projects}) => {
                 <th>Title</th>
                 <th>Link</th>
                 <th>Users</th>
+                <th></th>
             </tr>
           </thead>
           <tbody>
             {projects.map( project =>
                 <ProjectInfo
-                project={project} key={project.id.toString()}
+                project={project} key={project.id.toString()} deleteProject={deleteProject}
                 />)}
           </tbody>
         </table>
