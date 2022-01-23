@@ -6,6 +6,7 @@ import UserList from './components/User'
 import ProjectList from './components/Projects'
 import NoPage from "./components/NoPage";
 import LoginForm from "./components/Auth";
+import ProjectForm from "./components/ProjectForm";
 
 class App extends React.Component {
 
@@ -96,6 +97,15 @@ class App extends React.Component {
                 }).catch(error => { console.log(error) })
     }
 
+    createProject(title, link, users) {
+        const headers = this.get_headers()
+        const data = {'title': title, 'link': link, 'users': users}
+        axios.post("http://127.0.0.1:8000/api/projects/", data, {headers})
+        .then(response => {
+            this.get_data();
+        }).catch(error => { console.log(error) })
+    }
+
     render() {
         return (
             <BrowserRouter>
@@ -103,6 +113,7 @@ class App extends React.Component {
                 <ul>
                   <li><Link to="/users">Users</Link></li>
                   <li><Link to="/projects">Projects</Link></li>
+                  <li><Link to="/projects/create">Create project</Link></li>
                   <li>
                     { this.is_authenticated() ? <button onClick={() => this.logout()}>
                         Sign Out
@@ -113,6 +124,7 @@ class App extends React.Component {
               <Routes>
                 <Route path="/users" element={<UserList users={this.state.users} />} />
                 <Route path="/projects" element={<ProjectList projects={this.state.projects} deleteProject={(id) => this.deleteProject(id)} />} />
+                <Route path="/projects/create" element={<ProjectForm users={this.state.users} createProject={(title, link, users) => this.createProject(title, link, users)} />} />
                 <Route path="/login" element={<LoginForm get_token={(login, password) => this.get_token(login, password)} />} />
                 <Route path="*" element={<NoPage />} />
               </Routes>
