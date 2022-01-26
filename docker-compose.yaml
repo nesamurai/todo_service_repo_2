@@ -1,0 +1,27 @@
+version: '3.1'
+
+services:
+  db:
+    image: postgres:13.5
+    privileged: true
+    restart: always
+    ports:
+      - 54325:5432
+    environment:
+      POSTGRES_USER: anton
+      POSTGRES_PASSWORD: fqrbljrf
+      POSTGRES_DB: tudu_service
+
+    backend:
+      build: ./tudu_service
+      privileged: true
+      ports:
+        - 8080:8080
+      depends_on:
+        - db
+      environment:
+        DJANGO_SETTINGS_MODULE: 'tudu_service.prod_settings'
+      command: bash -c "
+        python manage.py migrate &&
+        gunicorn tudu_service.wsgi -b 0.0.0.0:8080
+      "
